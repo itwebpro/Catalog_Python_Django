@@ -1,0 +1,53 @@
+<!-- catalog/templates/catalog/product_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Каталог товаров</title>
+</head>
+<body>
+    <h1>Каталог товаров</h1>
+
+    <form method="get" action="">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ query }}">
+        <button type="submit">Найти</button>
+    </form>
+
+    <p>Сортировать по:
+        <a href="?sort=name">Названию</a> |
+        <a href="?sort=-name">Названию (убыв.)</a> |
+        <a href="?sort=price">Цене</a> |
+        <a href="?sort=-price">Цене (убыв.)</a> |
+        <a href="?sort=created_at">Дате добавления</a> |
+        <a href="?sort=-created_at">Дате (убыв.)</a>
+    </p>
+
+    <ul>
+        {% for product in page_obj.object_list %}
+            <li>
+                <h2>{{ product.name }}</h2>
+                <p>{{ product.description }}</p>
+                <p>Цена: {{ product.price }}</p>
+                <p>Категория: {{ product.category.name }}</p>
+                <p>Добавлено: {{ product.created_at }}</p>
+                {% if product.images.all %}
+                    {% for img in product.images.all|slice:":10" %}
+                        <img src="{{ img.image.url }}" alt="{{ product.name }}" style="max-width:200px;">
+                    {% endfor %}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div>
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Предыдущая</a>
+        {% endif %}
+
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Следующая</a>
+        {% endif %}
+    </div>
+</body>
+</html>
